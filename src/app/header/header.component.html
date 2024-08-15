@@ -1,0 +1,23 @@
+<mat-toolbar color="primary" class="header-toolbar">
+  <span class="logo">VEGEFOODS</span>
+
+  <span class="spacer"></span>
+
+  <nav mat-tab-nav-bar>
+    <a mat-tab-link routerLink="/dashboard" routerLinkActive="active-link">Home</a>
+    <a mat-tab-link routerLink="/auth" routerLinkActive="active-link">Log In</a>
+  </nav>
+
+  <button mat-icon-button [matMenuTriggerFor]="cartMenu" aria-label="Cart">
+    <mat-icon>shopping_cart</mat-icon>
+    <span class="cart-badge">0</span>
+  </button>
+
+  <mat-menu #cartMenu="matMenu">
+    <!-- Menu content goes here -->
+     <ul>
+      <li>1</li>
+      <li>2</li>
+     </ul>
+  </mat-menu>
+</mat-toolbar>
