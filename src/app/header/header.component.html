@@ -1,23 +1,50 @@
 <mat-toolbar color="primary" class="header-toolbar">
   <span class="logo">VEGEFOODS</span>
-
+  <nav mat-tab-nav-bar>
+    <a mat-tab-link routerLink="/dashboard" routerLinkActive="active-link">Home</a>
+    <a mat-tab-link routerLink="/checkout" routerLinkActive="active-link" *ngIf="isAuthenticated">Checkout</a>
+  </nav>
   <span class="spacer"></span>
 
   <nav mat-tab-nav-bar>
-    <a mat-tab-link routerLink="/dashboard" routerLinkActive="active-link">Home</a>
-    <a mat-tab-link routerLink="/auth" routerLinkActive="active-link">Log In</a>
+    <a mat-tab-link routerLink="/auth" routerLinkActive="active-link" *ngIf="!isAuthenticated">Log In</a>
+    <a mat-button *ngIf="isAuthenticated" [matMenuTriggerFor]="accountMenu" aria-label="Account">
+      <mat-icon>account_circle</mat-icon>
+      <span>{{ userName }}</span>
+    </a>
+
+    <mat-menu #accountMenu="matMenu">
+      <button mat-menu-item>
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </button>
+      <button mat-menu-item (click)="onLogout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+
+    <a mat-button [matMenuTriggerFor]="cartMenu" aria-label="Cart">
+      <mat-icon>shopping_cart</mat-icon>
+      <span class="cart-badge">0</span>
+    </a>
+
+    <mat-menu #cartMenu="matMenu">
+      <!-- Menu content goes here -->
+      <mat-list>
+        <mat-list-item>
+          <span matListItemTitle>Pepper</span>
+          <span matListItemLine>Produced by a plant</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>Salt</span>
+          <span matListItemLine>Extracted from sea water</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>Paprika</span>
+          <span matListItemLine>Produced by dried and ground red peppers</span>
+        </mat-list-item>
+      </mat-list>
+    </mat-menu>
   </nav>
-
-  <button mat-icon-button [matMenuTriggerFor]="cartMenu" aria-label="Cart">
-    <mat-icon>shopping_cart</mat-icon>
-    <span class="cart-badge">0</span>
-  </button>
-
-  <mat-menu #cartMenu="matMenu">
-    <!-- Menu content goes here -->
-     <ul>
-      <li>1</li>
-      <li>2</li>
-     </ul>
-  </mat-menu>
 </mat-toolbar>

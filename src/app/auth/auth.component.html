@@ -11,15 +11,20 @@
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Username</mat-label>
                 <input matInput formControlName="username" type="text">
+                <mat-error *ngIf="authForm.controls.username.hasError('required')">Username is required.</mat-error>
               </mat-form-field>
             </div>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Email</mat-label>
               <input matInput formControlName="email" type="email">
+              <mat-error *ngIf="authForm.controls.email.hasError('required')">Email is required.</mat-error>
+              <mat-error *ngIf="authForm.controls.email.hasError('email')">Email is invalid.</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Password</mat-label>
               <input matInput formControlName="password" type="password">
+              <mat-error *ngIf="authForm.controls.password.hasError('required')">Password is required.</mat-error>
+              <mat-error *ngIf="authForm.controls.password.hasError('minlength')">Password must be at least 6 characters long.</mat-error>
             </mat-form-field>
             <button mat-raised-button color="primary" class="full-width">{{ isLoginMode ? 'Login' : 'Register' }}</button>
           </form>

@@ -26,18 +26,38 @@ export class AuthComponent {
     password: new FormControl('', [Validators.minLength(6), Validators.required])
   })
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   onToggleMode() {
-    this.authForm.reset();
     this.isLoginMode = !this.isLoginMode;
+    this.authForm.reset();
+    this.errorLoginMessage = '';
+
+    this.authForm.get('username')?.clearValidators();
+    this.authForm.get('email')?.clearValidators();
+    this.authForm.get('password')?.clearValidators();
+
+    this.authForm.get('username')?.updateValueAndValidity();
+    this.authForm.get('email')?.updateValueAndValidity();
+    this.authForm.get('password')?.updateValueAndValidity();
+
     if (this.isLoginMode) {
-      this.authForm.get('username')?.clearValidators();
+      this.authForm.get('email')?.setValidators([Validators.email, Validators.required]);
+      this.authForm.get('password')?.setValidators([Validators.minLength(6), Validators.required]);
     } else {
       this.authForm.get('username')?.setValidators([Validators.required]);
+      this.authForm.get('email')?.setValidators([Validators.email, Validators.required]);
+      this.authForm.get('password')?.setValidators([Validators.minLength(6), Validators.required]);
     }
+
     this.authForm.get('username')?.updateValueAndValidity();
+    this.authForm.get('email')?.updateValueAndValidity();
+    this.authForm.get('password')?.updateValueAndValidity();
+
+    this.authForm.markAsPristine();
+    this.authForm.markAsUntouched();
   }
+
 
   onSubmit() {
     if (this.authForm.invalid) {
@@ -50,12 +70,14 @@ export class AuthComponent {
       const isSuccess = this.authService.login(email, password);
       if (isSuccess) {
         this.errorLoginMessage = '';
-        this.router.navigateByUrl('/dashboard');
+        this.router.navigateByUrl('/');
       } else {
         this.errorLoginMessage = 'Email or Password is incorrect!';
       }
     } else {
       this.authService.register(username, email, password);
+      this.isLoginMode = true;
     }
   }
+
 }

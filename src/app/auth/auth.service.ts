@@ -11,32 +11,49 @@ interface User {
     providedIn: 'root'
 })
 export class AuthService {
-    private isAuthenticated: boolean = false;
+    private readonly usersKey = 'users';
+    private readonly tokenKey = 'token';
+    currentUser: {username: string; email: string} | null = null;
 
-    constructor(private router: Router) {}
+    constructor(private router: Router) { }
 
     register(username: string, email: string, password: string): void {
-        const user: User = { username: username, email: email, password: password};
-        localStorage.setItem('user', JSON.stringify(user));
+        const usersRegistered = this.getRegisteredUsers();
+        const newUser: User = { username, email, password };
+
+        usersRegistered.push(newUser);
+        this.saveUsers(usersRegistered);
     }
 
     login(email: string, password: string): boolean {
-        const user: User = JSON.parse(localStorage.getItem('user')!);
-        if (user && user.email === email && user.password === password) {
-            this.isAuthenticated = true;
-            localStorage.setItem('token', 'basicTokenAuthenticated');
+        const users = this.getRegisteredUsers();
+        const user = users.find(u => u.email === email && u.password === password);
+
+        if (user) {
+            this.currentUser = { username: user.username, email: user.email };
+            localStorage.setItem(this.tokenKey, 'basicTokenAuthenticated');
             return true;
         }
+
         return false;
     }
 
+    private getRegisteredUsers(): User[] {
+        const usersJSON = localStorage.getItem(this.usersKey);
+        return usersJSON ? JSON.parse(usersJSON) : [];
+    }
+
+    private saveUsers(users: User[]): void {
+        localStorage.setItem(this.usersKey, JSON.stringify(users));
+    }
+
     logout(): void {
-        this.isAuthenticated = false;
-        localStorage.removeItem('token');
+        localStorage.removeItem(this.tokenKey);
+        this.currentUser = null;
         this.router.navigate(['auth']);
-      }
-    
-      isLoggedIn(): boolean {
-        return localStorage.getItem('token') !== null;
-      }
+    }
+
+    isLoggedIn(): boolean {
+        return localStorage.getItem(this.tokenKey) !== null;
+    }
 }
