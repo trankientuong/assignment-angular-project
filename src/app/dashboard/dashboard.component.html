@@ -1,1 +1,8 @@
-<p>dashboard works!</p>
+<div class="product-container">
+    <mat-grid-list cols="4" rowHeight="450px">
+      <mat-grid-tile *ngFor="let product of products">
+        <app-product-card [product]="product" (addToCart)="handleAddToCart($event)"></app-product-card>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+  

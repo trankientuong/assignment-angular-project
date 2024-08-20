@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
+import { BehaviorSubject } from "rxjs";
 
 interface User {
     username: string;
@@ -13,9 +14,13 @@ interface User {
 export class AuthService {
     private readonly usersKey = 'users';
     private readonly tokenKey = 'token';
-    currentUser: {username: string; email: string} | null = null;
+    private readonly userKey = 'currentUser';
+    // currentUser: {username: string; email: string} | null = null;
+    currentUser = new BehaviorSubject<{username: string; email: string} | null>(null);
 
-    constructor(private router: Router) { }
+    constructor(private router: Router) { 
+        this.loadUserFromLocalStorage();
+    }
 
     register(username: string, email: string, password: string): void {
         const usersRegistered = this.getRegisteredUsers();
@@ -30,8 +35,10 @@ export class AuthService {
         const user = users.find(u => u.email === email && u.password === password);
 
         if (user) {
-            this.currentUser = { username: user.username, email: user.email };
+            this.currentUser.next({ username: user.username, email: user.email });
             localStorage.setItem(this.tokenKey, 'basicTokenAuthenticated');
+            localStorage.setItem(this.userKey, JSON.stringify({ username: user.username, email: user.email }));
+            console.log('User logged in:', this.currentUser.value);
             return true;
         }
 
@@ -49,11 +56,21 @@ export class AuthService {
 
     logout(): void {
         localStorage.removeItem(this.tokenKey);
-        this.currentUser = null;
+        localStorage.removeItem(this.userKey);
+        this.currentUser.next(null);
+        console.log('User logged out:', this.currentUser.value);
         this.router.navigate(['auth']);
     }
 
     isLoggedIn(): boolean {
         return localStorage.getItem(this.tokenKey) !== null;
+    }
+
+    private loadUserFromLocalStorage(): void {
+        const storedUser = localStorage.getItem(this.userKey);
+        if (storedUser && this.isLoggedIn()) {
+            this.currentUser.next(JSON.parse(storedUser));
+            console.log('User restored from localStorage:', this.currentUser.value);
+        }
     }
 }
