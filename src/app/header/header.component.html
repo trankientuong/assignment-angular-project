@@ -29,22 +29,34 @@
       <span class="cart-badge">{{ totalProductsInCart }}</span>
     </a>
 
-    <mat-menu #cartMenu="matMenu">
-      <!-- Menu content goes here -->
-      <mat-list>
-        <mat-list-item>
-          <span matListItemTitle>Pepper</span>
-          <span matListItemLine>Produced by a plant</span>
-        </mat-list-item>
-        <mat-list-item>
-          <span matListItemTitle>Salt</span>
-          <span matListItemLine>Extracted from sea water</span>
-        </mat-list-item>
-        <mat-list-item>
-          <span matListItemTitle>Paprika</span>
-          <span matListItemLine>Produced by dried and ground red peppers</span>
-        </mat-list-item>
-      </mat-list>
+    <mat-menu #cartMenu="matMenu" class="cart-menu">
+      <ng-container *ngIf="productsInCart.length > 0; else emptyCart">
+        <mat-list style="max-height: 320px; overflow-y: auto;">
+          <mat-list-item *ngFor="let product of productsInCart">
+            <div fxLayout="row" fxLayoutAlign="space-between center" class="d-flex">
+              <div>
+                <span matListItemTitle>{{ product.name }}</span>
+                <span matListItemLine>{{ product.quantity }} x {{ product.price | currency }}</span>
+                <span matListItemLine>{{ product.price * product.quantity | currency }}</span>
+              </div>
+              <img matListAvatar [src]="product.image" alt="{{ product.name }}" />
+            </div>
+          </mat-list-item>
+        </mat-list>
+        <mat-divider></mat-divider>
+        <div class="cart-summary">
+          <div>Total Cost: {{ totalCost | currency }}</div>
+          <div class="my-1">
+            <button class="mr-1" mat-raised-button color="primary" routerLink="/cart">View Cart</button>
+            <button mat-raised-button color="primary" routerLink="/checkout">Checkout</button>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #emptyCart>
+        <div class="empty-cart">
+          <p>Your cart is empty.</p>
+        </div>
+      </ng-template>
     </mat-menu>
   </nav>
 </mat-toolbar>
