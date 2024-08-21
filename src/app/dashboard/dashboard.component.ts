@@ -6,6 +6,8 @@ import { ProductCardComponent } from "../product-card/product-card.component";
 import { Product, ProductCart } from '../services/product.model';
 import { ProductService } from '../services/product.service';
 import { CartService } from '../services/cart.service';
+import { DialogComponent } from '../shared/dialog/dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 
 @Component({
@@ -22,7 +24,7 @@ import { CartService } from '../services/cart.service';
 })
 export class DashboardComponent implements OnInit {
   products: Product[] = [];
-  constructor(private productService: ProductService, private cartService: CartService) {}
+  constructor(private productService: ProductService, private cartService: CartService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.productService.getProducts().subscribe({
@@ -32,5 +34,9 @@ export class DashboardComponent implements OnInit {
 
   handleAddToCart(productCart: ProductCart) {
     this.cartService.addCart(productCart);
+
+    this.dialog.open(DialogComponent, {
+      data: { message: `${productCart.name} has been added to your cart.` }
+    });
   }
 }
