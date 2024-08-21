@@ -1,19 +1,20 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ProductCart } from './product.model';
 import { AuthService } from '../auth/auth.service';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class CartService implements OnDestroy {
     private readonly storageKey = 'cartsItems';
-    productsInCart: ProductCart[] = [];
+    private productsInCartSubject = new BehaviorSubject<ProductCart[]>([]);
+    productsInCart$ = this.productsInCartSubject.asObservable(); 
     private userName? = '';
     private authSubscription: Subscription;
 
     constructor(private authService: AuthService) {
-        this.authSubscription = this.authService.currentUser.subscribe((user) => {
+        this.authSubscription = this.authService.currentUser$.subscribe((user) => {
             console.log('Auth state changed:', user);
             this.userName = user?.username ?? 'guest';
             this.loadCartForCurrentUser();
@@ -28,21 +29,27 @@ export class CartService implements OnDestroy {
         let storedCart = this.getCartFromLocalStorage();
 
         // Update the cart for the current user
-        const existingProductIndex = this.productsInCart.findIndex(
+        const existingProductIndex = this.productsInCartSubject.value.findIndex(
             (p) => p.id === productCart.id
         );
 
         if (existingProductIndex === -1) {
-            this.productsInCart = [...this.productsInCart, productCart];
+            const updatedCart = [...this.productsInCartSubject.value, productCart];
+            this.productsInCartSubject.next(updatedCart);
         } else {
-            this.productsInCart[existingProductIndex].quantity += productCart.quantity;
+            const updatedCart = this.productsInCartSubject.value.map((p, index) =>
+                index === existingProductIndex
+                    ? { ...p, quantity: p.quantity + productCart.quantity }
+                    : p
+            );
+            this.productsInCartSubject.next(updatedCart);
         }
 
-        console.log('Updated cart:', this.productsInCart);
+        console.log('Updated cart:', this.productsInCartSubject.value);
 
         storedCart = storedCart.filter((c) => c.userName !== this.userName);
 
-        storedCart.push(...this.productsInCart);
+        storedCart.push(...this.productsInCartSubject.value);
 
         this.saveCartToLocalStorage(storedCart);
     }
@@ -57,20 +64,10 @@ export class CartService implements OnDestroy {
     }
 
     private loadCartForCurrentUser(): void {
-        const currentUserName = this.userName;
-        console.log('Loading cart for:', currentUserName);
-
-        const storedCart = localStorage.getItem(this.storageKey);
-        if (storedCart) {
-            const productsInCart: ProductCart[] = JSON.parse(storedCart);
-            this.productsInCart = productsInCart.filter(
-                (c) => c.userName === currentUserName
-            );
-            console.log('Cart loaded:', this.productsInCart);
-        } else {
-            this.productsInCart = [];
-            console.log('No cart found, starting with an empty cart.');
-        }
+        const storedCart = this.getCartFromLocalStorage();
+        const userCart = storedCart.filter((c) => c.userName === this.userName);
+        this.productsInCartSubject.next(userCart);
+        console.log('Cart loaded:', userCart);
     }
 
     ngOnDestroy(): void {
