@@ -6,8 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
-import { AuthService } from '../auth/auth.service';
-
 @Component({
   selector: 'app-product-card',
   standalone: true,
@@ -20,8 +18,6 @@ export class ProductCardComponent {
   addToCart = output<ProductCart>();
 
   quantity: number = 1;
-
-  constructor(private authService: AuthService) {}
 
   onAddToCart() {
     this.addToCart.emit({

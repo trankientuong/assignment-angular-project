@@ -23,10 +23,7 @@ export class CartService implements OnDestroy {
 
     addCart(productCart: ProductCart): void {
         productCart.userName = this.userName;
-        console.log('Adding to cart:', productCart);
-
-        // Load all carts from localStorage
-        let storedCart = this.getCartFromLocalStorage();
+        console.log('Adding cart:', productCart);
 
         // Update the cart for the current user
         const existingProductIndex = this.productsInCartSubject.value.findIndex(
@@ -47,16 +44,52 @@ export class CartService implements OnDestroy {
 
         console.log('Updated cart:', this.productsInCartSubject.value);
 
-        storedCart = storedCart.filter((c) => c.userName !== this.userName);
+        // Save the updated cart to localStorage
+        this.updateCartFromLocalStorage();
+    }
 
-        storedCart.push(...this.productsInCartSubject.value);
+    updateCart(productCart: ProductCart) {
+        const updatedCart = this.productsInCartSubject.value.map((p) =>
+            p.id === productCart.id
+                ? { ...p, quantity: productCart.quantity }
+                : p
+        );
+    
+        this.productsInCartSubject.next(updatedCart);
 
-        this.saveCartToLocalStorage(storedCart);
+        this.updateCartFromLocalStorage();
+    }
+
+    removeCart(productId: number) {
+        const productInCartIndex = this.productsInCartSubject.value.findIndex(
+            (p) => p.id === productId
+        );
+    
+        if (productInCartIndex !== -1) {
+            const updatedCart = this.productsInCartSubject.value.filter(
+                (p) => p.id !== productId
+            );
+    
+            this.productsInCartSubject.next(updatedCart);
+    
+            this.updateCartFromLocalStorage();
+        }
     }
 
     private getCartFromLocalStorage(): ProductCart[] {
         const storedCart = localStorage.getItem(this.storageKey);
         return storedCart ? JSON.parse(storedCart) : [];
+    }
+
+    private updateCartFromLocalStorage() {
+        // Load all carts from localStorage
+        let storedCart = this.getCartFromLocalStorage();
+
+        // Save the updated cart to localStorage
+        storedCart = storedCart.filter((c) => c.userName !== this.userName);
+        storedCart.push(...this.productsInCartSubject.value);
+
+        this.saveCartToLocalStorage(storedCart);
     }
 
     private saveCartToLocalStorage(carts: ProductCart[]): void {

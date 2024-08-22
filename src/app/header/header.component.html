@@ -29,24 +29,28 @@
       <span class="cart-badge">{{ totalProductsInCart }}</span>
     </a>
 
-    <mat-menu #cartMenu="matMenu" class="cart-menu">
+    <mat-menu #cartMenu="matMenu" class="cart-menu" >
       <ng-container *ngIf="productsInCart.length > 0; else emptyCart">
         <mat-list style="max-height: 320px; overflow-y: auto;">
-          <mat-list-item *ngFor="let product of productsInCart">
+          <mat-list-item *ngFor="let product of productsInCart" (click)="$event.stopPropagation()">
             <div fxLayout="row" fxLayoutAlign="space-between center" class="d-flex">
-              <div>
+              <img matListAvatar [src]="product.image" alt="{{ product.name }}" />              
+              <div class="mx-3">
                 <span matListItemTitle>{{ product.name }}</span>
                 <span matListItemLine>{{ product.quantity }} x {{ product.price | currency }}</span>
                 <span matListItemLine>{{ product.price * product.quantity | currency }}</span>
               </div>
-              <img matListAvatar [src]="product.image" alt="{{ product.name }}" />
+              <input MatInput type="number" min="1" max="100" [(ngModel)]="product.quantity" (input)="validateAndUpdateQuantity(product)" />
+              <button mat-button (click)="removeFromCart(product.id)">
+                <mat-icon class="m-0">delete</mat-icon>
+              </button>
             </div>
           </mat-list-item>
         </mat-list>
         <mat-divider></mat-divider>
         <div class="cart-summary">
           <div>Total Cost: {{ totalCost | currency }}</div>
-          <div class="my-1">
+          <div class="my-1 text-center">
             <button class="mr-1" mat-raised-button color="primary" routerLink="/cart">View Cart</button>
             <button mat-raised-button color="primary" routerLink="/checkout">Checkout</button>
           </div>
