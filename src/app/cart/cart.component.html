@@ -1,1 +1,117 @@
-<p>cart works!</p>
+<div class="mat-elevation-z1 cart-table my-4">
+    <mat-table [dataSource]="dataSource">
+        <!-- Remove Column -->
+        <ng-container matColumnDef="remove">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-icon-button color="warn" (click)="removeFromCart(element.id)">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Image Column -->
+        <ng-container matColumnDef="image">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <img [src]="element.image" alt="{{ element.name }}" class="product-image">
+            </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>Product name</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{ element.name }}</mat-cell>
+        </ng-container>
+
+        <!-- Price Column -->
+        <ng-container matColumnDef="price">
+            <mat-header-cell *matHeaderCellDef>Price</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{ element.price | currency }}</mat-cell>
+        </ng-container>
+
+        <!-- Quantity Column -->
+        <ng-container matColumnDef="quantity">
+            <mat-header-cell *matHeaderCellDef>Quantity</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                    <input matInput [(ngModel)]="element.quantity" type="number" min="1" max="100" (input)="validateAndUpdateQuantity(element)">
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Total Column -->
+        <ng-container matColumnDef="total">
+            <mat-header-cell *matHeaderCellDef>Total</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                {{ element.price * element.quantity | currency }}
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row style="background-color: #8bc34a;color: white; font-weight: bold;"
+            *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+    </mat-table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements">
+    </mat-paginator>
+</div>
+<div class="my-4 d-flex" fxLayout="row" fxLayoutAlign="space-around">
+    <div>
+        <h4>Coupon Code</h4>
+        <p>Enter your coupon code if you have one</p>
+        <mat-form-field class="example-full-width">
+            <mat-label>Coupon Code</mat-label>
+            <input matInput #couponCodeEl maxlength="6" placeholder="Ex. SD5253" [(ngModel)]="couponCode">
+            <mat-hint align="end">{{couponCodeEl.value.length}} / 6</mat-hint>
+        </mat-form-field>
+        <div>
+            <button mat-raised-button color="primary" (click)="applyCoupon()">Apply Coupon</button>
+        </div>
+    </div>
+    <div fxLayout="column">
+        <h4>Estimate shipping and tax</h4>
+        <p>Enter your destination to get a shipping estimate</p>
+        <mat-form-field class="example-full-width">
+            <mat-label>Country</mat-label>
+            <input matInput placeholder="Ex. Viet Nam" [(ngModel)]="country">
+        </mat-form-field>
+        <mat-form-field class="example-full-width">
+            <mat-label>State/Province</mat-label>
+            <input matInput placeholder="Ex. Ho Chi Minh" [(ngModel)]="state">
+        </mat-form-field>
+        <mat-form-field class="example-full-width">
+            <mat-label>Zip/Postal Code</mat-label>
+            <input matInput #postalCodeEl maxlength="5" placeholder="Ex. 70000" [(ngModel)]="postalCode">
+            <mat-hint align="end">{{postalCodeEl.value.length}} / 5</mat-hint>
+        </mat-form-field>
+        <div>
+            <button mat-raised-button color="primary" (click)="estimateShipping()">Estimate</button>
+        </div>
+    </div>
+    <div fxLayout="column">
+        <div class="cart-totals">
+            <h4>Cart Totals</h4>
+            <div class="cart-totals-item">
+                <span>Subtotal</span>
+                <span>{{ subtotal | currency }}</span>
+            </div>
+            <div class="cart-totals-item">
+                <span>Delivery</span>
+                <span>{{ deliveryCost | currency }}</span>
+            </div>
+            <div class="cart-totals-item">
+                <span>Discount</span>
+                <span>{{ discount | currency }}</span>
+            </div>
+            <hr />
+            <div class="cart-totals-item total">
+                <span>TOTAL</span>
+                <span>{{ totalCost | currency }}</span>
+            </div>
+        </div>
+        <div class="my-4">
+            <button mat-raised-button color="primary" (click)="proceedToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+</div>
