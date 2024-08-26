@@ -1,8 +1,8 @@
-import { AfterViewInit, ChangeDetectorRef, Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ProductCart } from '../services/product.model';
 import { CartService } from '../services/cart.service';
-import { FormControl, FormGroup, FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
