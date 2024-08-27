@@ -61,19 +61,13 @@ export class CartService implements OnDestroy {
     }
 
     removeCart(productId: number) {
-        const productInCartIndex = this.productsInCartSubject.value.findIndex(
-            (p) => p.id === productId
+        const updatedCart = this.productsInCartSubject.value.filter(
+            (p) => p.id !== productId
         );
-    
-        if (productInCartIndex !== -1) {
-            const updatedCart = this.productsInCartSubject.value.filter(
-                (p) => p.id !== productId
-            );
-    
-            this.productsInCartSubject.next(updatedCart);
-    
-            this.updateCartFromLocalStorage();
-        }
+
+        this.productsInCartSubject.next(updatedCart);
+
+        this.updateCartFromLocalStorage();
     }
 
     private getCartFromLocalStorage(): ProductCart[] {
@@ -97,10 +91,39 @@ export class CartService implements OnDestroy {
     }
 
     private loadCartForCurrentUser(): void {
-        const storedCart = this.getCartFromLocalStorage();
-        const userCart = storedCart.filter((c) => c.userName === this.userName);
+        const storedCart = this.getCartFromLocalStorage();   
+        let userCart = storedCart.filter((c) => c.userName === this.userName);        
+        if (this.userName !== 'guest') {
+            const guestCart = storedCart.filter((c) => c.userName === 'guest');
+            if (guestCart.length > 0) {
+                const updateGuestCartUserName = guestCart.map((p) => {
+                    return { ...p, userName: this.userName }
+                })
+                userCart = this.mergeCartGuestAndUser(updateGuestCartUserName, userCart);
+            }
+        }  
         this.productsInCartSubject.next(userCart);
         console.log('Cart loaded:', userCart);
+    }
+
+    private mergeCartGuestAndUser(guestCart: ProductCart[], userCart: ProductCart[]): ProductCart[] {
+        // Add existing product from guest cart to user cart
+        userCart.forEach(userProduct => {
+            const indexExistingProductInUserCart = guestCart.findIndex(guestProduct => guestProduct.id === userProduct.id)
+            if (indexExistingProductInUserCart !== -1) {
+                userProduct.quantity += guestCart[indexExistingProductInUserCart].quantity;
+                guestCart.splice(indexExistingProductInUserCart, 1);
+            }
+        })
+
+        // Add new product from guest cart to user cart
+        userCart = [...userCart, ...guestCart];
+        // Filter cart 
+        const storedCart = this.getCartFromLocalStorage().filter(c => c.userName !== 'guest' && c.userName !== this.userName);
+        storedCart.push(...userCart);
+        // Save to localStorage
+        this.saveCartToLocalStorage(storedCart);
+        return userCart;
     }
 
     ngOnDestroy(): void {
