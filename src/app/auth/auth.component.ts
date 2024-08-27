@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from './auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -26,7 +26,7 @@ export class AuthComponent {
     password: new FormControl('', [Validators.minLength(6), Validators.required])
   })
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute) { }
 
   onToggleMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -70,7 +70,8 @@ export class AuthComponent {
       const isSuccess = this.authService.login(email, password);
       if (isSuccess) {
         this.errorLoginMessage = '';
-        this.router.navigateByUrl('/');
+        const redirectTo = this.route.snapshot.queryParams['redirectTo'] || '/';
+        this.router.navigateByUrl(redirectTo);
       } else {
         this.errorLoginMessage = 'Email or Password is incorrect!';
       }

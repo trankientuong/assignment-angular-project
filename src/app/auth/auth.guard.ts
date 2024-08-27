@@ -22,6 +22,6 @@ export const authGuard = (route: ActivatedRouteSnapshot, state: RouterStateSnaps
     if (isAuthenticated) {
         return true;
     } else {
-        return router.createUrlTree(['/auth']);
+        return router.createUrlTree(['/auth'], { queryParams: { redirectTo: state.url } });
     }
 }
