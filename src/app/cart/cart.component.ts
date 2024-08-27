@@ -10,13 +10,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { Router } from '@angular/router';
-
+import { Router, RouterLink } from '@angular/router';
+import { CartTotalsComponent } from "../shared/cart-totals/cart-totals.component";
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [MatPaginatorModule, MatTableModule, MatButtonModule, FormsModule, MatIconModule, MatInputModule, MatFormFieldModule, CommonModule, FlexLayoutModule, CurrencyPipe],
+  imports: [MatPaginatorModule, MatTableModule, MatButtonModule, FormsModule, MatIconModule, MatInputModule, MatFormFieldModule, CommonModule, FlexLayoutModule, CurrencyPipe, CartTotalsComponent, RouterLink],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
 })
@@ -25,11 +25,6 @@ export class CartComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = ['remove', 'image', 'name', 'price', 'quantity', 'total'];
   dataSource = new MatTableDataSource<ProductCart>();
-  totalProductsInCart: number = 0;
-  couponCode: string = 'SD5253';
-  country: string = 'Viet Nam';
-  state: string = 'Ho Chi Minh';
-  postalCode: string = '70000';
   totalCost?: number = 0;
   subtotal: number = 0;
   deliveryCost: number = 0;
@@ -42,7 +37,6 @@ export class CartComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     const cartSubscription = this.cartService.productsInCart$.subscribe((products) => {
       this.dataSource.data = products;
-      this.totalProductsInCart = products.length;
       this.subtotal = products.reduce((sum, item) => sum + item.price * item.quantity, 0);
       this.totalCost = this.subtotal + this.deliveryCost - this.discount;
     });
@@ -73,41 +67,14 @@ export class CartComponent implements OnInit, AfterViewInit {
     }
   }
 
-  applyCoupon() {
-    if (this.couponCode === 'SD5253') {
-      this.discount = 10;
-    } else {
-      this.discount = 0;
-      alert('Invalid Coupon Code');
-    }
-  }
-
-  estimateShipping() {
-    if (this.country === 'Viet Nam'.trim()) {
-      this.deliveryCost = 5;
-    } else {
-      this.deliveryCost = 10;
-    }
-
-    this.totalCost = this.subtotal + this.deliveryCost - this.discount;
-  }
-
-  calculateTotals() {
-    this.applyCoupon();
-    this.estimateShipping();
-    this.totalCost = this.subtotal + this.deliveryCost - this.discount;
-  }
-
   proceedToCheckout() {
-    this.calculateTotals();
-
     const message = `You are about to proceed to the checkout. 
-      \nSubtotal: ${this.subtotal}$ 
-      \nDelivery: ${this.deliveryCost}$ 
-      \nDiscount: ${this.discount}$ 
-      \n--------------------------------
-      \n**Total Cost: ${this.totalCost}$**
-      \n\nDo you want to continue with the checkout process?`;
+        \nSubtotal: ${this.subtotal}$ 
+        \nDelivery: ${this.deliveryCost}$ 
+        \nDiscount: ${this.discount}$ 
+        \n--------------------------------
+        \n**Total Cost: ${this.totalCost}$**
+        \n\nDo you want to continue with the checkout process?`;
 
     const isProceed = confirm(message);
     if (isProceed) {
