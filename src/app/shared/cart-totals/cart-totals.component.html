@@ -1,0 +1,20 @@
+<div class="cart-totals">
+    <h4>Cart Totals</h4>
+    <div class="cart-totals-item">
+        <span>Subtotal</span>
+        <span>{{ subtotal | currency }}</span>
+    </div>
+    <div class="cart-totals-item">
+        <span>Delivery</span>
+        <span>{{ deliveryCost | currency }}</span>
+    </div>
+    <div class="cart-totals-item">
+        <span>Discount</span>
+        <span>{{ discount | currency }}</span>
+    </div>
+    <hr />
+    <div class="cart-totals-item total">
+        <span>TOTAL</span>
+        <span>{{ totalCost | currency }}</span>
+    </div>
+</div>
