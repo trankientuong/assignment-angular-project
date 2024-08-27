@@ -1,76 +1,77 @@
 <h3>Billing Details</h3>
 <div class="d-flex" fxLayoutAlign="space-between" fxLayoutGap="24px">
     <div fxFlex="58.34%">
-        <form>
+        <form [formGroup]="checkoutForm">
             <div class="d-flex" fxLayout="row" fxLayoutAlign="space-between">
                 <mat-form-field appearance="outline" fxFlex="48%">
                     <mat-label>First Name</mat-label>
-                    <input matInput type="text">
+                    <input matInput type="text" formControlName="firstName">
+                    <mat-error *ngIf="checkoutForm.controls.firstName.hasError('required')">First name is required.</mat-error>
                 </mat-form-field>
                 <mat-form-field appearance="outline" fxFlex="48%">
                     <mat-label>Last Name</mat-label>
-                    <input matInput type="text">
+                    <input matInput type="text" formControlName="lastName">
+                    <mat-error *ngIf="checkoutForm.controls.lastName.hasError('required')">Last name is required.</mat-error>
                 </mat-form-field>
             </div>
             <div class="d-flex" fxLayout="row" fxLayoutAlign="space-between">
                 <mat-form-field appearance="outline" fxFlex="48%">
                     <mat-label>Phone number</mat-label>
-                    <input matInput type="tel">
+                    <input matInput type="tel" formControlName="phoneNumber">
+                    <mat-error *ngIf="checkoutForm.controls.phoneNumber.hasError('required')">Phone number is required.</mat-error>
                 </mat-form-field>
                 <mat-form-field appearance="outline" fxFlex="48%">
                     <mat-label>Email Address</mat-label>
-                    <input matInput type="text">
+                    <input matInput type="text" formControlName="emailAddress">
+                    <mat-error *ngIf="checkoutForm.controls.emailAddress.hasError('required')">Email address is required.</mat-error>
                 </mat-form-field>
             </div>
-            <div class="d-flex" fxLayout="row wrap" fxLayoutAlign="space-between">
+            <div formGroupName="address" class="d-flex" fxLayout="row wrap" fxLayoutAlign="space-between">
                 <mat-form-field appearance="outline" fxFlex="100%">
                     <mat-label>State / Country</mat-label>
-                    <mat-select>
-                      <mat-option value="one">First option</mat-option>
-                      <mat-option value="two">Second option</mat-option>
+                    <mat-select formControlName="country">
+                      <mat-option value="vn">Viet Nam</mat-option>
+                      <mat-option value="us">United State</mat-option>
                     </mat-select>
+                    <mat-error *ngIf="address.get('country')?.hasError('required')">Country is required.</mat-error>
                 </mat-form-field>
                 <mat-form-field appearance="outline" fxFlex="100%">
                     <mat-label>Street Address</mat-label>
-                    <input matInput type="text">
+                    <input matInput type="text" formControlName="street">
+                    <mat-error *ngIf="address.get('street')?.hasError('required')">Street is required.</mat-error>
                 </mat-form-field>
                 <mat-form-field appearance="outline" fxFlex="48%">
                     <mat-label>Town / City</mat-label>
-                    <input matInput type="text">
+                    <input matInput type="text" formControlName="city">
+                    <mat-error *ngIf="address.get('city')?.hasError('required')">City is required.</mat-error>
                 </mat-form-field>
                 <mat-form-field appearance="outline" fxFlex="48%">
                     <mat-label>Postcode / ZIP</mat-label>
-                    <input matInput type="text">
+                    <input matInput type="text" formControlName="postalCode">
+                    <mat-error *ngIf="address.get('postalCode')?.hasError('required')">Postal code is required.</mat-error>
                 </mat-form-field>
             </div>
         </form>
     </div>
     <div fxLayout="column" fxFlex="41.66%">
-        <div class="cart-totals">
-            <h4>Cart Totals</h4>
-            <div class="cart-totals-item">
-                <span>Subtotal</span>
-                <span>{{ subtotal | currency }}</span>
-            </div>
-            <div class="cart-totals-item">
-                <span>Delivery</span>
-                <span>{{ deliveryCost | currency }}</span>
-            </div>
-            <div class="cart-totals-item">
-                <span>Discount</span>
-                <span>{{ discount | currency }}</span>
-            </div>
-            <hr />
-            <div class="cart-totals-item total">
-                <span>TOTAL</span>
-                <span>{{ totalCost | currency }}</span>
+        <app-cart-totals [subtotal]="subtotal" [deliveryCost]="deliveryCost" [discount]="discount" [totalCost]="totalCost" />
+        <div class="my-1">
+            <!-- <h4>Coupon Code</h4> -->
+            <p>Enter your coupon code if you have one</p>
+            <mat-form-field appearance="outline">
+                <mat-label>Coupon Code</mat-label>
+                <input matInput #couponCodeEl maxlength="6" placeholder="Ex. SD5253" [(ngModel)]="couponCode">
+                <mat-hint align="end">{{couponCodeEl.value.length}} / 6</mat-hint>
+            </mat-form-field>
+            <button class="ml-2" mat-raised-button color="primary" (click)="applyCoupon()">Apply Coupon</button>
+            <div>
             </div>
         </div>
-        <div class="my-1">
-            <mat-checkbox>I have read and accept the terms and conditions</mat-checkbox>
+        <div class="my-1" [formGroup]="checkoutForm">
+            <mat-checkbox formControlName="agree">I have read and accept the terms and conditions</mat-checkbox>
         </div>
         <div class="my-2">
-            <button mat-raised-button color="primary" style="width: 100%;">Place an order</button>
+            <button mat-raised-button color="primary" style="width: 100%;" (click)="submitOrder()">Place an order</button>
         </div>
     </div>
 </div>
