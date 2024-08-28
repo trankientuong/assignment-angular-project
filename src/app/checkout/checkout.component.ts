@@ -43,7 +43,8 @@ export class CheckoutComponent {
   discount: number = 0;
 
   couponCode: string = 'SD5253';
-  submitted = false;
+  submitted: boolean = false;
+  isEmptyCart: boolean = false;
 
   private destroyRef = inject(DestroyRef);
 
@@ -55,6 +56,7 @@ export class CheckoutComponent {
 
   ngOnInit(): void {
     const cartSubscription = this.cartService.productsInCart$.subscribe((products) => {
+      this.isEmptyCart = products.length === 0 ? true : false;
       this.subtotal = products.reduce((sum, item) => sum + item.price * item.quantity, 0);
       this.totalCost = this.subtotal + this.deliveryCost - this.discount;
     });

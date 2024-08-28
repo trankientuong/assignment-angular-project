@@ -1,4 +1,8 @@
 <h3>Billing Details</h3>
+@if (isEmptyCart) {
+<p>Your cart is empty!</p>
+}
+@else {
 <div class="d-flex" fxLayoutAlign="space-between" fxLayoutGap="24px">
     <div fxFlex="58.34%">
         <form [formGroup]="checkoutForm">
@@ -6,32 +10,36 @@
                 <mat-form-field appearance="outline" fxFlex="48%">
                     <mat-label>First Name</mat-label>
                     <input matInput type="text" formControlName="firstName">
-                    <mat-error *ngIf="checkoutForm.controls.firstName.hasError('required')">First name is required.</mat-error>
+                    <mat-error *ngIf="checkoutForm.controls.firstName.hasError('required')">First name is
+                        required.</mat-error>
                 </mat-form-field>
                 <mat-form-field appearance="outline" fxFlex="48%">
                     <mat-label>Last Name</mat-label>
                     <input matInput type="text" formControlName="lastName">
-                    <mat-error *ngIf="checkoutForm.controls.lastName.hasError('required')">Last name is required.</mat-error>
+                    <mat-error *ngIf="checkoutForm.controls.lastName.hasError('required')">Last name is
+                        required.</mat-error>
                 </mat-form-field>
             </div>
             <div class="d-flex" fxLayout="row" fxLayoutAlign="space-between">
                 <mat-form-field appearance="outline" fxFlex="48%">
                     <mat-label>Phone number</mat-label>
                     <input matInput type="tel" formControlName="phoneNumber">
-                    <mat-error *ngIf="checkoutForm.controls.phoneNumber.hasError('required')">Phone number is required.</mat-error>
+                    <mat-error *ngIf="checkoutForm.controls.phoneNumber.hasError('required')">Phone number is
+                        required.</mat-error>
                 </mat-form-field>
                 <mat-form-field appearance="outline" fxFlex="48%">
                     <mat-label>Email Address</mat-label>
                     <input matInput type="text" formControlName="emailAddress">
-                    <mat-error *ngIf="checkoutForm.controls.emailAddress.hasError('required')">Email address is required.</mat-error>
+                    <mat-error *ngIf="checkoutForm.controls.emailAddress.hasError('required')">Email address is
+                        required.</mat-error>
                 </mat-form-field>
             </div>
             <div formGroupName="address" class="d-flex" fxLayout="row wrap" fxLayoutAlign="space-between">
                 <mat-form-field appearance="outline" fxFlex="100%">
                     <mat-label>State / Country</mat-label>
                     <mat-select formControlName="country">
-                      <mat-option value="vn">Viet Nam</mat-option>
-                      <mat-option value="us">United State</mat-option>
+                        <mat-option value="vn">Viet Nam</mat-option>
+                        <mat-option value="us">United State</mat-option>
                     </mat-select>
                     <mat-error *ngIf="address.get('country')?.hasError('required')">Country is required.</mat-error>
                 </mat-form-field>
@@ -48,13 +56,15 @@
                 <mat-form-field appearance="outline" fxFlex="48%">
                     <mat-label>Postcode / ZIP</mat-label>
                     <input matInput type="text" formControlName="postalCode">
-                    <mat-error *ngIf="address.get('postalCode')?.hasError('required')">Postal code is required.</mat-error>
+                    <mat-error *ngIf="address.get('postalCode')?.hasError('required')">Postal code is
+                        required.</mat-error>
                 </mat-form-field>
             </div>
         </form>
     </div>
     <div fxLayout="column" fxFlex="41.66%">
-        <app-cart-totals [subtotal]="subtotal" [deliveryCost]="deliveryCost" [discount]="discount" [totalCost]="totalCost" />
+        <app-cart-totals [subtotal]="subtotal" [deliveryCost]="deliveryCost" [discount]="discount"
+            [totalCost]="totalCost" />
         <div class="my-1">
             <!-- <h4>Coupon Code</h4> -->
             <p>Enter your coupon code if you have one</p>
@@ -71,7 +81,9 @@
             <mat-checkbox formControlName="agree">I have read and accept the terms and conditions</mat-checkbox>
         </div>
         <div class="my-2">
-            <button mat-raised-button color="primary" style="width: 100%;" (click)="submitOrder()">Place an order</button>
+            <button mat-raised-button color="primary" style="width: 100%;" (click)="submitOrder()">Place an
+                order</button>
         </div>
     </div>
 </div>
+}
