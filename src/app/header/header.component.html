@@ -2,6 +2,7 @@
   <span class="logo">VEGEFOODS</span>
   <nav mat-tab-nav-bar>
     <a mat-tab-link routerLink="/dashboard" routerLinkActive="active-link">Home</a>
+    <a mat-tab-link routerLink="/wishlist" routerLinkActive="active-link">Wishlist</a>
     <a mat-tab-link routerLink="/checkout" routerLinkActive="active-link" *ngIf="isAuthenticated">Checkout</a>
   </nav>
   <span class="spacer"></span>
@@ -34,6 +35,9 @@
         <mat-list style="max-height: 320px; overflow-y: auto;">
           <mat-list-item *ngFor="let product of productsInCart" (click)="$event.stopPropagation()">
             <div fxLayout="row" fxLayoutAlign="space-between center" class="d-flex">
+              <button mat-button (click)="moveToWishlist(product.id)">
+                <mat-icon class="m-0">favorite_border</mat-icon>
+              </button>
               <img matListAvatar [src]="product.image" alt="{{ product.name }}" />              
               <div class="mx-3">
                 <span matListItemTitle>{{ product.name }}</span>

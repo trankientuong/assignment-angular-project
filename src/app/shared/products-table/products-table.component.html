@@ -1,0 +1,54 @@
+<div class="mat-elevation-z1 cart-table my-4">
+    <mat-table [dataSource]="dataSource">
+        <!-- Remove Column -->
+        <ng-container matColumnDef="remove">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <ng-template [ngTemplateOutlet]="actionButtonTemplate" [ngTemplateOutletContext]="{ $implicit: element }"></ng-template>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Image Column -->
+        <ng-container matColumnDef="image">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <img [src]="element.image" alt="{{ element.name }}" class="product-image">
+            </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>Product name</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{ element.name }}</mat-cell>
+        </ng-container>
+
+        <!-- Price Column -->
+        <ng-container matColumnDef="price">
+            <mat-header-cell *matHeaderCellDef>Price</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{ element.price | currency }}</mat-cell>
+        </ng-container>
+
+        <!-- Quantity Column -->
+        <ng-container matColumnDef="quantity">
+            <mat-header-cell *matHeaderCellDef>Quantity</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <ng-template [ngTemplateOutlet]="quantityInputTemplate" [ngTemplateOutletContext]="{ $implicit: element }"></ng-template>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Total Column -->
+        <ng-container matColumnDef="total">
+            <mat-header-cell *matHeaderCellDef>Total</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                {{ element.price * element.quantity | currency }}
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row style="background-color: #8bc34a;color: white; font-weight: bold;"
+            *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+    </mat-table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements">
+    </mat-paginator>
+</div>

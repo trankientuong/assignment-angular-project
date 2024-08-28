@@ -1,0 +1,33 @@
+.cart-table {
+    width: 100%;
+}
+
+.mat-column-name {
+    height: 100px;
+}
+
+.mat-header-cell,
+.mat-cell {
+    padding: 8px;
+}
+
+.mat-header-cell {
+    background-color: #8bc34a;
+    color: white;
+    font-weight: bold;
+}
+
+.product-image {
+    width: 100px;
+    height: auto;
+}
+
+.mat-form-field {
+    width: 60px;
+}
+
+hr {
+    margin: 10px 0;
+    border: 0;
+    border-top: 1px solid #e0e0e0;
+}

@@ -13,3 +13,7 @@ export interface ProductCart {
     quantity: number;
     userName?: string;
 }
+
+export interface WishlistItem extends ProductCart {
+    savedForLater: boolean;
+}

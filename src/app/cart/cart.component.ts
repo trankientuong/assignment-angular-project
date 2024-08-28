@@ -12,11 +12,12 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { Router, RouterLink } from '@angular/router';
 import { CartTotalsComponent } from "../shared/cart-totals/cart-totals.component";
+import { ProductsTableComponent } from "../shared/products-table/products-table.component";
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [MatPaginatorModule, MatTableModule, MatButtonModule, FormsModule, MatIconModule, MatInputModule, MatFormFieldModule, CommonModule, FlexLayoutModule, CurrencyPipe, CartTotalsComponent, RouterLink],
+  imports: [MatPaginatorModule, MatTableModule, MatButtonModule, FormsModule, MatIconModule, MatInputModule, MatFormFieldModule, CommonModule, FlexLayoutModule, CurrencyPipe, CartTotalsComponent, RouterLink, ProductsTableComponent],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
 })

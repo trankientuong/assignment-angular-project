@@ -61,6 +61,10 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  moveToWishlist(productId: number) {
+    this.cartService.moveToWishlist(productId);
+  }
+
   onLogout() {
     if (this.isAuthenticated) {
       this.authService.logout();
