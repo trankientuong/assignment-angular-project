@@ -1,0 +1,14 @@
+<h3>Wishlist Items</h3>
+<app-products-table [dataSource]="dataSource" [actionButtonTemplate]="actionButtonTemplate" [quantityInputTemplate]="quantityInputTemplate">
+    <ng-template #actionButtonTemplate let-element>
+        <button mat-icon-button color="light" (click)="moveToCart(element.id)">
+            <mat-icon>shopping_cart</mat-icon>
+        </button>
+    </ng-template>
+    
+    <ng-template #quantityInputTemplate let-element>
+        <mat-form-field>
+            <input matInput [(ngModel)]="element.quantity" type="number" disabled>
+        </mat-form-field>
+    </ng-template>
+</app-products-table>

@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { ProductCart } from './product.model';
+import { ProductCart, WishlistItem } from './product.model';
 import { AuthService } from '../auth/auth.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -8,8 +8,11 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 })
 export class CartService implements OnDestroy {
     private readonly storageKey = 'cartsItems';
+    private readonly wishListKey = 'wishlistItems';
     private productsInCartSubject = new BehaviorSubject<ProductCart[]>([]);
     productsInCart$ = this.productsInCartSubject.asObservable(); 
+    private wishlistSubject = new BehaviorSubject<WishlistItem[]>([]);
+    wishlist$ = this.wishlistSubject.asObservable();
     private userName? = '';
     private authSubscription: Subscription;
 
@@ -18,6 +21,7 @@ export class CartService implements OnDestroy {
             console.log('Auth state changed:', user);
             this.userName = user?.username ?? 'guest';
             this.loadCartForCurrentUser();
+            this.loadWishListForCurrentUser();
         });
     }
 
@@ -125,6 +129,65 @@ export class CartService implements OnDestroy {
         this.saveCartToLocalStorage(storedCart);
         return userCart;
     }
+
+    moveToWishlist(productId: number): void {
+        const cartItems = this.productsInCartSubject.value;
+        const itemIndex = cartItems.findIndex(item => item.id === productId);
+        
+        if (itemIndex !== -1) {
+            const itemToMove = cartItems[itemIndex];
+            this.removeCart(itemToMove.id);
+    
+            const wistListItems = this.wishlistSubject.value;
+            const itemIndexInWishList = wistListItems.findIndex(item => item.id === itemToMove.id);
+    
+            if (itemIndexInWishList !== -1) {
+                // If item exists in wishlist, create a new list with updated quantity
+                const updatedWishList = wistListItems.map((item, index) => 
+                    index === itemIndexInWishList 
+                    ? { ...item, quantity: item.quantity + itemToMove.quantity }
+                    : item
+                );
+                this.wishlistSubject.next(updatedWishList);
+            } else {
+                // If item not exist, add it to the wishlist
+                this.wishlistSubject.next([
+                    ...this.wishlistSubject.value, 
+                    { ...itemToMove, savedForLater: true }
+                ]);
+            }
+            this.saveWishlistToLocalStorage();
+        }
+    }
+    
+    moveToCart(productId: number): void {
+        const wishlistItems = this.wishlistSubject.value;
+        const itemIndex = wishlistItems.findIndex(item => item.id === productId);
+        if (itemIndex !== -1) {
+            const itemToMove = wishlistItems[itemIndex];
+            this.wishlistSubject.next(wishlistItems.filter(item => item.id !== productId));
+            this.addCart(itemToMove);
+            this.saveWishlistToLocalStorage();
+        }
+    }
+    
+    private saveWishlistToLocalStorage() {
+        let storedWishlist = this.getWishListFromLocalStorage();
+        storedWishlist = storedWishlist.filter((c) => c.userName !== this.userName);
+        storedWishlist.push(...this.wishlistSubject.value);
+        localStorage.setItem(this.wishListKey, JSON.stringify(storedWishlist));
+    }
+
+    private getWishListFromLocalStorage(): WishlistItem[] {
+        const storedWishlist = localStorage.getItem(this.wishListKey);
+        return storedWishlist ? JSON.parse(storedWishlist) : [];
+    }
+
+    private loadWishListForCurrentUser(): void {
+        const storedWishlist = this.getWishListFromLocalStorage();
+        const userWishList = storedWishlist.filter(w => w.userName === this.userName);
+        this.wishlistSubject.next(userWishList);
+    }    
 
     ngOnDestroy(): void {
         this.authSubscription.unsubscribe();
