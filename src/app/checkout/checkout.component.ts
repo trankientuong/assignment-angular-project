@@ -12,6 +12,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { CartTotalsComponent } from "../shared/cart-totals/cart-totals.component";
 import { CartService } from '../services/cart.service';
 import { AuthService } from '../auth/auth.service';
+import { CanDeactivateFn } from '@angular/router';
 
 
 @Component({
@@ -42,6 +43,7 @@ export class CheckoutComponent {
   discount: number = 0;
 
   couponCode: string = 'SD5253';
+  submitted = false;
 
   private destroyRef = inject(DestroyRef);
 
@@ -94,15 +96,25 @@ export class CheckoutComponent {
   }
 
   submitOrder() {
-    console.log(this.checkoutForm);
     if (this.checkoutForm.valid) {
       if (this.checkoutForm.controls.agree.value === false) {
         alert('You must agree before submitting.');
         return;
       }
+      this.submitted = true;
       alert('Order placed successfully!');
     } else {
       this.checkoutForm.markAllAsTouched();
     }
   }
+}
+
+export const canLeaveCheckoutPage: CanDeactivateFn<CheckoutComponent> = (component) => {
+  if (component.submitted) {
+    return true;
+  }
+  if (component.checkoutForm.dirty || component.checkoutForm.touched) {
+    return window.confirm('Do you really want to leave? You will lose the entered data.')
+  }
+  return true;
 }
